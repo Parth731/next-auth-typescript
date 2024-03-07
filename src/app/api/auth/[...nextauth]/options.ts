@@ -54,9 +54,14 @@ export const options: NextAuthOptions = {
     // newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
   },
   callbacks: {
-    async session({ token, session }: any) {
+    async session({ token, session }) {
       console.log(token, session);
       return session;
+    },
+    async jwt({ token, session }) {
+      console.log(token, session);
+      if (!token.sub) return token;
+      return token;
     },
   },
   session: { strategy: "jwt" },
