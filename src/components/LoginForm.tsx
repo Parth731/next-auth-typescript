@@ -26,8 +26,10 @@ export default function LoginForm() {
         setError("Invalid Credentials");
         return;
       }
-
-      router.replace("dashboard");
+      if (res?.ok) {
+        router.push("/dashboard");
+      }
+      // router.replace("dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +60,7 @@ export default function LoginForm() {
             </div>
           )}
 
-          <Link className="text-sm mt-3 text-right" href={"/register"}>
+          <Link className="text-sm mt-3 text-right" href={"/auth/register"}>
             Don't have an account? <span className="underline">Register</span>
           </Link>
         </form>

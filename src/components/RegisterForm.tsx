@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
@@ -21,37 +22,25 @@ export default function RegisterForm() {
     }
 
     try {
-      const resUserExists = await fetch("api/userExists", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+      const res = await signIn("credentials", {
+        name,
+        email,
+        password,
+        redirect: false,
       });
 
-      const { user } = await resUserExists.json();
-
-      if (user) {
-        setError("User already exists.");
+      if (res?.error) {
+        setError("Invalid Credentials");
         return;
       }
+      // if (res?.ok) {
+      //   router.push("/dashboard");
+      // }
 
-      const res = await fetch("api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-
-      if (res.ok) {
+      if (res?.ok) {
         const form: any = e.target;
         form?.reset();
-        router.push("/");
+        router.push("/dashboard");
       } else {
         console.log("User registration failed.");
       }
@@ -91,7 +80,7 @@ export default function RegisterForm() {
             </div>
           )}
 
-          <Link className="text-sm mt-3 text-right" href={"/"}>
+          <Link className="text-sm mt-3 text-right" href={"/auth/custom-login"}>
             Already have an account? <span className="underline">Login</span>
           </Link>
         </form>
